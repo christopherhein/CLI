@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+if ARGV[0] == "get"
+  ARGV[0] = "describe"
+end
+
+puts `aws #{ARGV[1]} #{ARGV[0]}-#{ARGV[2]} #{ARGV[3..-1].join(" ")} --output table`
