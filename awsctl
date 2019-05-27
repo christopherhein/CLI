@@ -1,8 +1,28 @@
 #!/usr/bin/env ruby
-ARGV[0] = 'describe' if ARGV[0] == 'get'
+
+require 'optparse'
+require "pry"
+
+options = {
+  output: "table"
+}
+OptionParser.new do |opts|
+  opts.banner = "Usage: awsctl [command] [service] [resource] [options]"
+  opts.on("-o OUTPUT", "--output OUTPUT", "change output method") do |v|
+    options[:output] = v
+  end
+  opts.on("-l FILTER", "--selector FILTER", "change filtering") do |v|
+    options[:filter] = v
+  end
+end.parse!
+
+options = options.map {|k, v| ["--#{k}", v] }
+opt_str = options.compact.join(" ")
+
+# ARGV[0] = 'describe' if ARGV[0] == 'get'
 command = if !ARGV.select {|i| i == 'help' }.empty?
   "#{ARGV[1]}#{ARGV[2] == 'help' ? '' : " #{ARGV[0]}-#{ARGV[2]}"} help"
 else
-  "#{ARGV[1]} #{ARGV[0]}-#{ARGV[2]} #{ARGV[3..-1].join(' ')} --output table"
+  "#{ARGV[1]} #{ARGV[0]}-#{ARGV[2]} #{ARGV[3..-1].join(' ')} #{opt_str}"
 end
 puts `aws #{command}`
